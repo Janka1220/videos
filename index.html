@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fingi</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+<body id="game-container">
+    <div id="start-screen">
+        <div class="play-button" onclick="startGame()"></div>
+        <div class="bottom-left-button" onclick="extraFunction()"></div>
+    </div>
+    <div id="game-screen" style="display: none;">
+        <canvas id="gameCanvas" width="800" height="900"></canvas>
+        <div id="game-over-screen" class="game-over-screen" style="display: none;">
+            <h1>Game Over</h1>
+            <div class="quit-button" onclick="quitGame()"></div>
+        </div>
+    </div>
