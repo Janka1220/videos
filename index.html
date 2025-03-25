@@ -9,13 +9,29 @@
 </head>
 <body id="game-container">
     <div id="start-screen">
+        <h1 class="game-title"> <p>FEED</p> <p>THE</p> <p>MEOW!</p> </h1>
         <div class="play-button" onclick="startGame()"></div>
         <div class="bottom-left-button" onclick="extraFunction()"></div>
     </div>
+    
+    <div id="login-modal" style="display:none;">
+        <div class="login-container">
+            <h2>Login</h2>
+            <input type="email" id="user-email" placeholder="Email">
+            <input type="password" id="user-password" placeholder="Password">
+            <button id="login-button">Login</button>
+            <button id="close-login">Close</button>
+        </div>
+    </div>
+
     <div id="game-screen" style="display: none;">
         <canvas id="gameCanvas" width="800" height="900"></canvas>
-        <div id="game-over-screen" class="game-over-screen" style="display: none;">
-            <h1>Game Over</h1>
+
+        <div id="game-over-screen" class="game-over-screen" style="display: flex;">
+            <h1 class="game-over-title">Game Over</h1>
+            <h2 id="final-score">Your Score: 0</h2>
+            <div class="play-again-button" onclick="startGame()"></div>
             <div class="quit-button" onclick="quitGame()"></div>
         </div>
     </div>
+</html>

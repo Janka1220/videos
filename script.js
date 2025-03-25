@@ -7,6 +7,7 @@ function startGame() {
     document.getElementById("start-screen").style.display = "none";
     document.getElementById("game-screen").style.display = "flex";
     document.getElementById("game-container").style.background = "url('background.jpeg') no-repeat center center/cover";
+    document.getElementById("game-over-screen").style.display = "none";
     
    
     canvas = document.getElementById("gameCanvas");
@@ -21,6 +22,11 @@ function startGame() {
     foodImages[1].src = "food2.png";
     foodImages[2].src = "food3.png";
 
+    badImages = [new Image(), new Image(), new Image()];
+    badImages[0].src = "trash1.png";
+    badImages[1].src = "trash2.png";
+    badImages[2].src = "trash3.png";
+
    
     cat = {
         x: canvas.width / 2 - 50,
@@ -34,7 +40,7 @@ function startGame() {
 
     foods = [];
     score = 0;
-    lives = 5;
+    lives = 3;
     gameOver = false;
 
     
@@ -53,14 +59,35 @@ function startGame() {
 }
 
 function quitGame() {
-    document.getElementById("game-screen").style.display = "none";
-    document.getElementById("start-screen").style.display = "flex";
-    document.getElementById("game-container").style.background = "url('menu-background.jpeg') no-repeat center center/cover";
+    
+
+        document.getElementById("game-screen").style.display = "none";
+        document.getElementById("start-screen").style.display = "flex";
+        document.getElementById("game-over-screen").style.display = "none";
+        document.getElementById("game-container").style.background = "url('menu-background.jpeg') no-repeat center center/cover";
+
+
+    foods = [];
+    score = 0;
+    lives = 3;
+    gameOver = false;
+
+
 }
 
+
 function extraFunction() {
-    alert("Bottom left button clicked!");
+    document.getElementById('login-modal').style.display = 'flex';
 }
+
+
+window.addEventListener('DOMContentLoaded', function() {
+document.getElementById('close-login').addEventListener('click', function() {
+    document.getElementById('login-modal').style.display = 'none';
+    document.getElementById('start-screen').style.display = 'flex'; 
+});
+});
+
 
 document.addEventListener("keydown", (event) => {
     if (event.key === "ArrowLeft") cat.moveLeft = true;
@@ -74,8 +101,10 @@ document.addEventListener("keyup", (event) => {
 
 function createFood() {
     const x = Math.random() * (canvas.width - 40) + 20;
-    const imageIndex = Math.floor(Math.random() * foodImages.length);
-    foods.push({ x: x, y: -40, img: foodImages[imageIndex] });
+    const isBad = Math.random() < 0.5;
+    const imgArray = isBad ? badImages : foodImages;
+    const imageIndex = Math.floor(Math.random() * imgArray.length);
+    foods.push({ x: x, y: -40, img: imgArray[imageIndex], isBad: isBad });
 }
 
 function moveCat() {
@@ -85,18 +114,26 @@ function moveCat() {
 
 function moveFoods() {
     for (let i = foods.length - 1; i >= 0; i--) {
-        foods[i].y += 2; 
-        if (foods[i].y > canvas.height) {
-            foods.splice(i, 1);
-            lives--;
-            if (lives <= 0) gameOver = true;
-        } else if (
+        foods[i].y += 3;
+
+        if (
             foods[i].y + 40 > cat.y &&
             foods[i].x > cat.x &&
             foods[i].x < cat.x + cat.width
         ) {
+            if (foods[i].isBad) {
+                lives--;
+                if (lives <= 0) {
+                gameOver = true;
+                startGameOver();
+                }
+            } 
+            else {
+                score++;
+            }
             foods.splice(i, 1);
-            score++;
+        } else if (foods[i].y > canvas.height) {
+           foods.splice(i, 1);
         }
     }
 }
@@ -107,7 +144,7 @@ function drawCat() {
 
 function drawFoods() {
     foods.forEach(food => {
-        ctx.drawImage(food.img, food.x, food.y, 60, 60);
+        ctx.drawImage(food.img, food.x, food.y, 80, 80);
     });
 }
 
@@ -121,18 +158,14 @@ function drawScoreAndLives() {
     heartImage.src = "heart.png"; 
     
     for (let i = 0; i < lives; i++) {
-        ctx.drawImage(heartImage, canvas.width - 30 - (i * 30), 10, 25, 25); // Right to left
+        ctx.drawImage(heartImage, canvas.width - 30 - (i * 30), 10, 25, 25);
     }
 }
 
 
-function drawGameOver() {
-    ctx.fillStyle = "black";
-    ctx.font = "50px Arial";
-    ctx.fillText("Game Over", canvas.width / 2 - 150, canvas.height / 2 - 50);
-    ctx.font = "30px Arial";
-    ctx.fillText("Final Score: " + score, canvas.width / 2 - 100, canvas.height / 2);
-    document.getElementById("quit-button").style.display = "block";
+function startGameOver() {
+    document.getElementById("final-score").textContent = "Your Score: " + score;
+    document.getElementById("game-over-screen").style.display = "flex";
 }
 
 
@@ -145,7 +178,7 @@ function gameLoop() {
         drawFoods();
         drawScoreAndLives();
     } else {
-        drawGameOver();
+        startGameOver();
     }
     if (Math.random() < 0.02) createFood();
     if (!gameOver) requestAnimationFrame(gameLoop);
